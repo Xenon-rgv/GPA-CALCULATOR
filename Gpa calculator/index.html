@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>FOS GPA Calculator</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="./css/bootstrap.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-md-7">
+                <div class="card shadow">
+                    <div class="card-header bg-primary text-white text-center">
+                        <h3>STUDENTS GPA Calculator</h3>
+                    </div>
+                    <div class="card-body">
+                        <form id="gpaForm">
+                            <div id="courses">
+                                <div class="row mb-3 course-row">
+                                    <div class="col-md-6">
+                                        <input type="text" class="form-control" name="courseName[]" placeholder="Course Name" required>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <input type="number" class="form-control" name="courseUnit[]" placeholder="Units" min="1" required>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <select class="form-select" name="courseGrade[]" required>
+                                            <option value="">Grade</option>
+                                            <option value="5">A</option>
+                                            <option value="4">B</option>
+                                            <option value="3">C</option>
+                                            <option value="2">D</option>
+                                            <option value="1">E</option>
+                                            <option value="0">F</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-secondary mb-3" id="addCourse">Add Course</button>
+                            <button type="submit" class="btn btn-primary mb-3 float-end">Calculate GPA</button>
+                        </form>
+                        <div id="result" class="alert alert-info mt-4 d-none"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="./js/bootstrap.js"></script>
+    <script>
+        // Add new course row
+        document.getElementById('addCourse').addEventListener('click', function() {
+            const coursesDiv = document.getElementById('courses');
+            const newRow = coursesDiv.firstElementChild.cloneNode(true);
+            newRow.querySelectorAll('input, select').forEach(input => input.value = '');
+            coursesDiv.appendChild(newRow);
+        });
+
+        // GPA calculation
+        document.getElementById('gpaForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            let totalUnits = 0, totalPoints = 0;
+            const rows = document.querySelectorAll('.course-row');
+            let valid = true;
+            rows.forEach(row => {
+                const unit = parseInt(row.querySelector('input[name="courseUnit[]"]').value);
+                const grade = parseInt(row.querySelector('select[name="courseGrade[]"]').value);
+                if (isNaN(unit) || isNaN(grade)) valid = false;
+                totalUnits += unit;
+                totalPoints += unit * grade;
+            });
+            const resultDiv = document.getElementById('result');
+            if (!valid || totalUnits === 0) {
+                resultDiv.textContent = "Please fill all fields correctly.";
+                resultDiv.classList.remove('d-none', 'alert-info');
+                resultDiv.classList.add('alert-danger');
+                return;
+            }
+            const gpa = (totalPoints / totalUnits).toFixed(2);
+            resultDiv.textContent = `Your GPA is: ${gpa}`;
+            resultDiv.classList.remove('d-none', 'alert-danger');
+            resultDiv.classList.add('alert-info');
+        });
+    </script>
+</body>
+</html>
